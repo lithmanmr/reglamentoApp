@@ -1,6 +1,6 @@
 {
-  "name": "LMR — Reglamento Minero",
-  "short_name": "LMR",
+  "name": "AprendeYa! — Reglamento Minero",
+  "short_name": "AprendeYa!",
   "description": "Buscador del Reglamento de Seguridad y Salud Ocupacional en Minería",
   "start_url": "./index.html",
   "display": "standalone",
