@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a3a6b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SSS">
+<meta name="description" content="Buscador del Reglamento de Seguridad y Salud Ocupacional en Minería">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="apple-touch-icon" sizes="192x192" href="assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="assets/icon-512.png">
+<title>AprendeYa! — Reglamento Minero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- ✅ FUSE.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js"></script>
+<style>
+:root {
+  --navy: #0d1f3c;
+  --navy2: #132848;
+  --blue: #1a4a8a;
+  --blue2: #1e5ab5;
+  --accent: #3b82f6;
+  --accent2: #60a5fa;
+  --gold: #f59e0b;
+  --gold2: #fbbf24;
+  --white: #f8fafc;
+  --gray100: #e2e8f0;
+  --gray200: #cbd5e1;
+  --gray400: #94a3b8;
+  --gray500: #64748b;
+  --surface: #162035;
+  --surface2: #1d2d4a;
+  --card: #1a2d50;
+  --red: #ef4444;
+  --green: #22c55e;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  font-family: 'Barlow', sans-serif;
+  background: var(--navy);
+  color: var(--white);
+  overflow: hidden;
+}
+
+/* ─── LAYOUT ─── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── HEADER ─── */
+#header {
+  background: linear-gradient(135deg, var(--navy2) 0%, #0e2244 100%);
+  border-bottom: 2px solid var(--blue);
+  padding: 0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px 8px;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--blue2), var(--accent));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: white;
+  letter-spacing: -0.5px;
+  box-shadow: 0 2px 12px rgba(59,130,246,0.4);
+  flex-shrink: 0;
+}
+
+.app-title-group {
+  flex: 1;
+}
+
+.app-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: white;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+.app-subtitle {
+  font-size: 10px;
+  color: var(--accent2);
+  font-weight: 500;
+  line-height: 1.2;
+  margin-top: 2px;
+}
+
+.header-stats {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.stat-chip {
+  background: rgba(59,130,246,0.15);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent2);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.stat-chip span {
+  display: block;
+  font-size: 13px;
+  color: var(--gold2);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+}
+
+/* ─── SEARCH BAR ─── */
+.search-wrap {
+  padding: 8px 16px 12px;
+  position: relative;
+}
+
+#searchInput {
+  width: 100%;
+  background: var(--surface2);
+  border: 2px solid rgba(59,130,246,0.3);
+  border-radius: var(--radius);
+  padding: 12px 48px 12px 44px;
+  font-size: 16px;
+  font-family: 'Barlow', sans-serif;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+
+#searchInput::placeholder { color: var(--gray500); }
+#searchInput::-webkit-search-cancel-button { display: none; }
+#searchInput::-webkit-search-decoration { display: none; }
+#searchInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
+.search-icon {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 26px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(100,116,139,0.4);
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--gray200);
+  font-size: 14px;
+  transition: background 0.2s;
+  display: none;
+}
+.clear-btn.visible { display: flex; }
+.clear-btn:active { background: rgba(100,116,139,0.7); }
+
+/* ─── NAV TABS ─── */
+#navTabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid rgba(59,130,246,0.2);
+  flex-shrink: 0;
+}
+
+.nav-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--gray400);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 10px 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.2s;
+  position: relative;
+  letter-spacing: 0.3px;
+}
+
+.nav-tab svg { transition: transform 0.2s; }
+.nav-tab.active { color: var(--accent2); }
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 20%; right: 20%;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+}
+
+/* ─── MAIN CONTENT ─── */
+#mainContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* ─── VIEWS ─── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── SEARCH RESULTS ─── */
+#resultsInfo {
+  padding: 10px 16px 6px;
+  font-size: 12px;
+  color: var(--gray400);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.results-count {
+  font-weight: 700;
+  color: var(--accent2);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+}
+
+#filterRow {
+  padding: 0 16px 10px;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+#filterRow::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+  flex-shrink: 0;
+  background: var(--surface2);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray400);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.filter-chip.active {
+  background: var(--blue2);
+  border-color: var(--accent);
+  color: white;
+}
+.filter-chip:active { opacity: 0.7; }
+
+/* ─── ARTICLE CARD ─── */
+.article-card {
+  background: var(--card);
+  margin: 0 12px 8px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(59,130,246,0.15);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.1s;
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: translateY(0); } }
+
+.article-card:active { transform: scale(0.98); border-color: var(--accent); }
+.article-card.expanded { border-color: var(--accent); }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+}
+
+.art-number {
+  background: linear-gradient(135deg, var(--blue2), var(--accent));
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  color: white;
+  flex-shrink: 0;
+  min-width: 52px;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.card-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-chapter {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold2);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.card-preview {
+  font-size: 13px;
+  color: var(--gray100);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-expand-icon {
+  flex-shrink: 0;
+  color: var(--gray400);
+  transition: transform 0.2s;
+}
+.article-card.expanded .card-expand-icon { transform: rotate(180deg); }
+
+.card-divider {
+  height: 1px;
+  background: rgba(59,130,246,0.15);
+  margin: 0 12px;
+}
+
+.card-body {
+  display: none;
+  padding: 12px;
+}
+.article-card.expanded .card-body { display: block; }
+
+.card-titulo {
+  font-size: 10px;
+  color: var(--accent2);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 4px;
+}
+
+.card-subcap {
+  font-size: 10px;
+  color: var(--gray400);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.card-full-text {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--gray100);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.card-full-text mark {
+  background: rgba(251,191,36,0.25);
+  color: var(--gold2);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(59,130,246,0.15);
+}
+
+.action-btn {
+  flex: 1;
+  background: rgba(59,130,246,0.12);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background 0.15s;
+}
+.action-btn:active { background: rgba(59,130,246,0.25); }
+.action-btn.fav-active {
+  background: rgba(245,158,11,0.15);
+  border-color: rgba(245,158,11,0.4);
+  color: var(--gold2);
+}
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--gray500);
+}
+.empty-state svg { margin-bottom: 16px; opacity: 0.5; }
+.empty-state h3 { font-size: 16px; color: var(--gray400); margin-bottom: 8px; }
+.empty-state p { font-size: 13px; line-height: 1.5; }
+
+/* ─── HOME VIEW ─── */
+#homeView {
+  padding: 16px 12px;
+}
+
+.home-banner {
+  background: linear-gradient(135deg, var(--blue2) 0%, #0e3d8a 100%);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.home-banner::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 50%;
+}
+.home-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -20px; right: 20px;
+  width: 80px; height: 80px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 50%;
+}
+
+.banner-badge {
+  display: inline-block;
+  background: rgba(251,191,36,0.2);
+  border: 1px solid rgba(251,191,36,0.4);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.banner-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.1;
+  margin-bottom: 6px;
+  position: relative;
+}
+
+.banner-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.4;
+  position: relative;
+}
+
+/* ─── QUICK ACCESS ─── */
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray400);
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.quick-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.quick-card {
+  background: var(--card);
+  border: 1px solid rgba(59,130,246,0.15);
+  border-radius: var(--radius);
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.quick-card:active { transform: scale(0.97); border-color: var(--accent); }
+
+.quick-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.quick-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--white);
+}
+
+.quick-count {
+  font-size: 10px;
+  color: var(--gray400);
+  font-weight: 500;
+}
+
+/* ─── RECENT SEARCHES ─── */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.recent-item {
+  background: var(--surface2);
+  border: 1px solid rgba(59,130,246,0.1);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.recent-item:active { background: var(--card); }
+
+.recent-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--gray200);
+}
+
+.recent-arrow {
+  color: var(--gray500);
+}
+
+/* ─── ÍNDICE VIEW ─── */
+#indiceView {
+  padding: 12px;
+}
+
+.titulo-section {
+  margin-bottom: 8px;
+}
+
+.titulo-header {
+  background: linear-gradient(90deg, var(--blue) 0%, var(--surface2) 100%);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titulo-name {
+  flex: 1;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  line-height: 1.2;
+}
+
+.titulo-articles {
+  font-size: 10px;
+  color: var(--accent2);
+  flex-shrink: 0;
+  font-weight: 600;
+}
+
+.capitulo-list {
+  padding-left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.capitulo-item {
+  background: var(--surface2);
+  border: 1px solid rgba(59,130,246,0.1);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s;
+}
+.capitulo-item:active { background: var(--card); }
+
+.cap-number {
+  background: rgba(59,130,246,0.15);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: var(--accent2);
+  flex-shrink: 0;
+}
+
+.cap-name {
+  flex: 1;
+  font-size: 12px;
+  color: var(--gray100);
+  line-height: 1.3;
+}
+
+.cap-arts {
+  font-size: 10px;
+  color: var(--gray500);
+  flex-shrink: 0;
+}
+
+/* ─── FAVORITOS VIEW ─── */
+#favView {
+  padding: 12px;
+}
+
+/* ─── DETAIL OVERLAY ─── */
+#detailOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,22,40,0.95);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#detailOverlay.open { transform: translateY(0); }
+
+.detail-header {
+  background: linear-gradient(135deg, var(--navy2), #0e2244);
+  border-bottom: 2px solid var(--blue);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.detail-back {
+  background: rgba(59,130,246,0.15);
+  border: none;
+  border-radius: var(--radius-sm);
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--accent2);
+  flex-shrink: 0;
+}
+
+.detail-title {
+  flex: 1;
+}
+
+.detail-art-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: white;
+  line-height: 1;
+}
+
+.detail-cap-name {
+  font-size: 11px;
+  color: var(--accent2);
+  margin-top: 2px;
+}
+
+.detail-fav-btn {
+  background: none;
+  border: none;
+  color: var(--gray400);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 22px;
+}
+.detail-fav-btn.active { color: var(--gold2); }
+
+.detail-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.detail-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.breadcrumb-chip {
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  color: var(--accent2);
+  font-weight: 600;
+}
+
+.detail-text {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--gray100);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.detail-text mark {
+  background: rgba(251,191,36,0.25);
+  color: var(--gold2);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.detail-nav {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-top: 1px solid rgba(59,130,246,0.2);
+  flex-shrink: 0;
+}
+
+.detail-nav-btn {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: 'Barlow', sans-serif;
+}
+.detail-nav-btn:disabled { opacity: 0.35; cursor: default; }
+
+/* ─── LOADING ─── */
+#loadingScreen {
+  position: fixed;
+  inset: 0;
+  background: var(--navy);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.loading-logo {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--blue2), var(--accent));
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 36px;
+  color: white;
+  box-shadow: 0 0 40px rgba(59,130,246,0.4);
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 40px rgba(59,130,246,0.4); }
+  50% { box-shadow: 0 0 60px rgba(59,130,246,0.7); }
+}
+
+.loading-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--accent2);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.loading-bar {
+  width: 200px;
+  height: 3px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.loading-progress {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue2), var(--accent));
+  border-radius: 3px;
+  animation: loadProgress 1.5s ease-in-out forwards;
+}
+
+@keyframes loadProgress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+/* ─── TOAST ─── */
+#toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--card);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 24px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+  z-index: 300;
+  transition: transform 0.3s;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ─── HIGHLIGHT ─── */
+.highlight-term {
+  background: rgba(251,191,36,0.2);
+  color: var(--gold2);
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 600;
+}
+
+/* ─── SCROLL STYLING ─── */
+#mainContent::-webkit-scrollbar { width: 3px; }
+#mainContent::-webkit-scrollbar-track { background: transparent; }
+#mainContent::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+/* ─── NORMA CHIP ─── */
+.norma-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold2);
+  margin-bottom: 12px;
+}
+
+/* ─── STATS ROW ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.stat-box {
+  background: var(--surface2);
+  border: 1px solid rgba(59,130,246,0.15);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  color: var(--accent2);
+  line-height: 1;
+}
+
+.stat-lbl {
+  font-size: 10px;
+  color: var(--gray400);
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+/* ─── DESKTOP ─── */
+@media (min-width: 481px) {
+  #app {
+    border-left: 1px solid rgba(59,130,246,0.15);
+    border-right: 1px solid rgba(59,130,246,0.15);
+    box-shadow: 0 0 60px rgba(0,0,0,0.5);
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loadingScreen">
+  <div class="loading-logo"><img src="assets/1.avif" style="width:100%;height:100%;object-fit:contain;border-radius:20px;"></div>
+  <div class="loading-text">Saber, Conocer, Aplicar</div>
+  <div class="loading-text">Cargando Reglamento...</div>
+  <div class="loading-bar"><div class="loading-progress"></div></div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <!-- Header -->
+  <div id="header">
+    <div class="header-top">
+      <div class="app-logo">
+        <div class="logo-icon"><img src="assets/1.avif" style="width:100%;height:100%;object-fit:contain;border-radius:10px;"></div>
+        <div class="app-title-group">
+          <div class="app-name">AprendeYa!</div>
+          <div class="app-subtitle">Reglamento SSO Minería</div>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-chip"><span id="artCount">417</span>Arts.</div>
+        <div class="stat-chip"><span>D.S.<br>024</span>2016</div>
+      </div>
+    <button onclick="openAbout()" style="position:absolute;top:10px;right:12px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    </button>
+  </div>
+      <div class="search-wrap">
+      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="search" id="searchInput" placeholder="Buscar artículo, término, tema..." autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="clear-btn" id="clearBtn">✕</button>
+    </div>
+  </div>
+
+  <!-- Nav Tabs -->
+  <div id="navTabs">
+    <button class="nav-tab active" data-view="search" onclick="switchView('search')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      BUSCAR
+    </button>
+    <button class="nav-tab" data-view="home" onclick="switchView('home')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      INICIO
+    </button>
+    <button class="nav-tab" data-view="indice" onclick="switchView('indice')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      ÍNDICE
+    </button>
+    <button class="nav-tab" data-view="fav" onclick="switchView('fav')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      GUARDADOS
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div id="mainContent">
+
+    <!-- SEARCH VIEW -->
+    <div id="searchView" class="view active">
+      <div id="resultsInfo" style="display:none">
+        <span class="results-count" id="resultsCount">0</span>
+        <span id="resultsLabel">resultados encontrados</span>
+      </div>
+      <div id="filterRow" style="display:none"></div>
+      <div id="intentBanner" style="display:none; margin:8px 12px; padding:12px 14px; background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(30,90,181,0.1)); border:1px solid rgba(59,130,246,0.35); border-radius:12px; font-size:13px; color:#93c5fd; gap:10px; align-items:flex-start; line-height:1.5;"></div>
+      <div id="semanticBanner" style="display:none; margin:0 12px 8px; padding:10px 14px; background:linear-gradient(135deg,rgba(34,197,94,0.1),rgba(16,185,129,0.08)); border:1px solid rgba(34,197,94,0.3); border-radius:10px; font-size:12px; color:#86efac; gap:8px; align-items:center; flex-wrap:wrap;"></div>
+      <div id="resultsList"></div>
+      <div id="searchEmpty" class="empty-state">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <h3>Busca en el Reglamento</h3>
+        <p>Escribe un término, número de artículo o tema para encontrar las normas correspondientes al instante.</p>
+      </div>
+    </div>
+
+    <!-- HOME VIEW -->
+    <div id="homeView" class="view">
+      <div class="home-banner">
+        <div class="banner-badge">⛏ Normativa Vigente</div>
+        <div class="banner-title">Reglamento de Seguridad y Salud Ocupacional en Minería</div>
+        <div class="banner-sub">D.S. N° 024-2016-EM • Modificado por D.S. N° 023-2017-EM y D.S. N° 034-2023-EM • Edición abril 2026</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-num">417</div>
+          <div class="stat-lbl">Artículos</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">5</div>
+          <div class="stat-lbl">Títulos</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">56</div>
+          <div class="stat-lbl">Capítulos</div>
+        </div>
+      </div>
+
+      <div class="section-title">Acceso Rápido</div>
+      <div class="quick-grid" id="quickGrid"></div>
+
+      <div class="section-title">Búsquedas Recientes</div>
+      <div id="recentList" class="recent-list"></div>
+    </div>
+
+    <!-- ÍNDICE VIEW -->
+    <div id="indiceView" class="view">
+      <div id="indiceContent"></div>
+    </div>
+
+    <!-- FAVORITOS VIEW -->
+    <div id="favView" class="view">
+      <div id="favList"></div>
+      <div id="favEmpty" class="empty-state" style="display:none">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        <h3>Sin artículos guardados</h3>
+        <p>Guarda artículos importantes para acceder rápidamente sin buscar.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Detail Overlay -->
+<div id="detailOverlay">
+  <div class="detail-header">
+    <button class="detail-back" onclick="closeDetail()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
+    </button>
+    <div class="detail-title">
+      <div class="detail-art-num" id="detailArtNum">Artículo 1</div>
+      <div class="detail-cap-name" id="detailCapName"></div>
+    </div>
+    <button class="detail-fav-btn" id="detailFavBtn" onclick="toggleFavDetail()">☆</button>
+  </div>
+  <div class="detail-body">
+    <div class="detail-breadcrumb" id="detailBreadcrumb"></div>
+    <div class="norma-chip" id="detailNorma">⚖ D.S. N° 024-2016-EM</div>
+    <div class="detail-text" id="detailText"></div>
+  </div>
+  <div class="detail-nav">
+    <button class="detail-nav-btn" id="prevBtn" onclick="navigateArticle(-1)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+      Anterior
+    </button>
+    <button class="detail-nav-btn" id="nextBtn" onclick="navigateArticle(1)">
+      Siguiente
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- About Overlay -->
+<div id="aboutOverlay" style="position:fixed;inset:0;background:rgba(10,22,40,0.97);z-index:150;display:flex;flex-direction:column;max-width:480px;margin:0 auto;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);">
+  <div style="background:linear-gradient(135deg,#132848,#0e2244);border-bottom:2px solid #1a4a8a;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+    <button onclick="closeAbout()" style="background:rgba(59,130,246,0.15);border:none;border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#60a5fa;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
+    </button>
+    <span style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:white;">Acerca de AprendeYa!</span>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:24px 20px;">
+    <div style="text-align:center;margin-bottom:28px;">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#1e5ab5,#3b82f6);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 0 40px rgba(59,130,246,0.4);">
+        <img src="assets/1.avif" style="width:100%;height:100%;object-fit:contain;border-radius:20px;">
+      </div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:28px;color:white;">AprendeYa!</div>
+      <div style="font-size:12px;color:#60a5fa;margin-top:4px;">Versión 1.0 — 2026</div>
+    </div>
+
+    <div style="background:#1a2d50;border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:18px;margin-bottom:16px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">¿Qué es AprendeYa!</div>
+      <div style="font-size:13.5px;color:#e2e8f0;line-height:1.7;">AprendeYa! es un buscador inteligente del Reglamento de Seguridad y Salud Ocupacional en Minería (D.S. N° 024-2016-EM), diseñado para que profesionales del sector minero encuentren cualquier artículo al instante desde su celular.</div>
+    </div>
+
+    <div style="background:#1a2d50;border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:18px;margin-bottom:16px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Características</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#e2e8f0;">
+          <span style="font-size:18px;">🔍</span> Búsqueda inteligente con sinónimos técnicos
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#e2e8f0;">
+          <span style="font-size:18px;">📋</span> Los 417 artículos completos del reglamento
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#e2e8f0;">
+          <span style="font-size:18px;">⭐</span> Guarda artículos favoritos
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:#e2e8f0;">
+          <span style="font-size:18px;">⚖️</span> Incluye modificaciones D.S. 023-2017 y 034-2023
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#1a2d50;border:1px solid rgba(59,130,246,0.2);border-radius:14px;padding:18px;margin-bottom:16px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Desarrollador</div>
+      <div style="font-size:13.5px;color:#e2e8f0;line-height:1.7;">
+        <span style="font-size:12px;color:#94a3b8;">Estudiante de Ingeniería de Minas:</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#e2e8f0;">
+          <span style="font-size:16px;">👤</span>
+          <span style="color:#94a3b8;">Lithman Adolfo Morales Rivera</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#e2e8f0;">
+          <span style="font-size:16px;">📱</span>
+          <span style="color:#94a3b8;">+51 917 524 248</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#e2e8f0;">
+          <span style="font-size:16px;">✉️</span>
+          <span style="color:#94a3b8;">lithmanmr1011@gmail.com</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:14px;padding:16px;margin-bottom:24px;">
+      <div style="font-size:11px;color:#94a3b8;line-height:1.6;">✅ El contenido de esta aplicación ha sido elaborado con base en el texto oficial del D.S. N° 024-2016-EM y sus modificatorias D.S. N° 023-2017-EM y D.S. N° 034-2023-EM, publicados en el diario El Peruano.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+<script src="motor_intencion.js"></script>
+<script src="semantica.js"></script>
+<script src="reglamento_data.js"></script>
+<script>
+
+// ─── STORAGE SEGURO ───────────────────────────────────────────────────────────
+function storageSave(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch(e) {
+    showToast('⚠️ No se pudo guardar. Almacenamiento lleno o bloqueado.');
+    return false;
+  }
+}
+
+function storageLoad(key, fallback) {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : fallback;
+  } catch(e) {
+    return fallback;
+  }
+}
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let currentView = 'search';
+let searchResults = [];
+let currentFilter = 'todos';
+let currentDetailIndex = 0;
+let currentSearchTerm = '';
+let favorites = storageLoad('topo_favs', []);
+let recentSearches = storageLoad('topo_recent', []);
+
+// ✅ MEJORA 5 — Estadísticas locales
+let articleStats = storageLoad('topo_stats', {});
+
+function registerOpen(artId) {
+  articleStats[artId] = (articleStats[artId] || 0) + 1;
+  storageSave('topo_stats', articleStats);
+}
+
+function applyPopularity(results) {
+  if (!results || results.length === 0) return results;
+  return [...results].sort((a, b) => {
+    const scoreA = articleStats[a.id] || 0;
+    const scoreB = articleStats[b.id] || 0;
+    return scoreB - scoreA;
+  }).slice(0, 3).concat(
+    results.filter(r => !results.slice(0, 3).includes(r))
+  );
+}
+
+// ─── FUSE.JS CONFIG ───────────────────────────────────────────────────────────
+const fuseOptions = {
+  keys: [
+    { name: 'text',         weight: 0.6 },
+    { name: 'capitulo',     weight: 0.25 },
+    { name: 'titulo',       weight: 0.1 },
+    { name: 'subcapitulo',  weight: 0.05 }
+  ],
+  threshold: 0.4,      // 0 = exacto, 1 = cualquier cosa — 0.4 es ideal
+  distance: 200,       // cuántos caracteres busca alrededor
+  minMatchCharLength: 3,
+  includeScore: true,
+  ignoreLocation: true // busca en todo el texto, no solo al inicio
+};
+
+const fuseIndex = new Fuse(REGLAMENTO_DATA, fuseOptions);
+
+// ─── SEARCH ENGINE ───────────────────────────────────────────────────────────
+function normalizeText(str) {
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s]/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+
+function tokenize(str) {
+  return normalizeText(str).split(' ').filter(w => w.length > 1);
+}
+
+// Synonyms and expansions for mining terms
+const SYNONYMS = {
+  // ── EPP y protección personal ──
+  'epp': ['equipo proteccion personal', 'casco', 'guantes', 'botas', 'lentes', 'arnes', 'respirador', 'proteccion auditiva', 'chaleco'],
+  'arnes': ['epp', 'trabajo altura', 'linea vida', 'mosqueton'],
+  'respirador': ['mascara', 'polvo silice', 'gases', 'epp respiratorio'],
+
+  // ── Gestión de riesgos ──
+  'iperc': ['identificacion peligros', 'evaluacion riesgos', 'medidas control', 'peligro riesgo', 'matriz riesgo'],
+  'pets': ['procedimiento escrito trabajo seguro', 'estandar procedimiento', 'instructivo trabajo'],
+  'acr': ['analisis causa raiz', 'investigacion accidente', 'causalidad'],
+  'arst': ['analisis riesgo superior', 'permiso trabajo'],
+  'monitoreo': ['vigilancia', 'medicion', 'control ambiental', 'higiene ocupacional'],
+
+  // ── Organización SSO ──
+  'sctr': ['seguro complementario trabajo riesgo'],
+  'ssoma': ['seguridad salud medio ambiente'],
+  'sso': ['seguridad salud ocupacional'],
+  'comite': ['comite seguridad salud', 'csso', 'representante trabajadores'],
+  'supervisor': ['ingeniero seguridad', 'responsable seguridad', 'vigilancia'],
+
+  // ── Accidentes e incidentes ──
+  'accidente': ['incidente', 'evento no deseado', 'lesion', 'fatalidad', 'muerte', 'herido'],
+  'incidente': ['accidente', 'casi accidente', 'evento peligroso', 'incidente peligroso'],
+  'emergencia': ['evacuacion', 'rescate', 'brigada', 'simulacro', 'alarma'],
+
+  // ── Explosivos y voladura ──
+  'explosivos': ['voladura', 'blasteo', 'detonacion', 'anfo', 'amonal', 'detonador', 'polvorin', 'disparo', 'mecha', 'fulminante'],
+  'voladura': ['explosivos', 'disparo', 'tronadura', 'detonacion', 'anfo', 'blasteo'],
+  'polvorin': ['almacenamiento explosivos', 'deposito explosivos', 'magazine'],
+  'disparo': ['voladura', 'detonacion', 'encendido', 'fuego'],
+
+  // ── Labores subterráneas ──
+  'ventilacion': ['ventilacion mina', 'aire fresco', 'aire viciado', 'ventilador', 'ducto', 'gases'],
+  'chimenea': ['labor subterranea', 'galeria vertical', 'raise', 'pique'],
+  'galeria': ['labor subterranea', 'tunel', 'crucero', 'acceso subterraneo'],
+  'pique': ['chimenea', 'pozo vertical', 'shaft', 'extraccion'],
+  'rampa': ['acceso subterraneo', 'via principal', 'galeria inclinada'],
+  'crucero': ['galeria transversal', 'labor horizontal', 'acceso'],
+  'echadero': ['ore pass', 'paso mineral', 'vaciado mineral'],
+  'sostenimiento': ['perno', 'malla', 'shotcrete', 'cuadro madera', 'estabilidad', 'geomecanica'],
+  'frente': ['frente trabajo', 'frente avance', 'labor activa'],
+  'tajeo': ['tajo subterraneo', 'labor explotacion', 'camara'],
+
+  // ── Minería superficial ──
+  'tajo': ['tajo abierto', 'mina cielo abierto', 'cantera', 'pit'],
+  'acarreo': ['transporte mineral', 'volquete', 'dumper', 'camion minero'],
+  'carguio': ['cargador frontal', 'pala', 'excavadora', 'scooptram'],
+
+  // ── Depósitos y residuos ──
+  'relave': ['deposito relave', 'relaves', 'pasta', 'presa relaves'],
+  'desmonte': ['botadero', 'deposito desmonte', 'escombrera'],
+  'lixiviacion': ['pad lixiviacion', 'pila lixiviacion', 'heap leach'],
+
+  // ── Equipos y maquinaria ──
+  'izaje': ['izamiento', 'winche', 'grua', 'polipasto', 'eslingas', 'carga suspendida'],
+  'winche': ['izaje', 'malacate', 'extraccion', 'pozo'],
+  'scooptram': ['scoop', 'cargador subterraneo', 'lhd'],
+  'locomotora': ['ferrocarril minero', 'riel', 'transporte subterraneo'],
+  'jumbo': ['perforadora', 'perforacion subterranea', 'drill jumbo'],
+
+  // ── Agentes físicos y salud ──
+  'ruido': ['exposicion ruido', 'proteccion auditiva', 'decibeles', 'oidos'],
+  'polvo': ['material particulado', 'silice', 'silicosis', 'polvo respirable'],
+  'vibracion': ['vibraciones', 'exposicion vibracion', 'mano brazo'],
+  'radiacion': ['radiacion ionizante', 'rayos x', 'radiacion no ionizante'],
+  'iluminacion': ['luz', 'luxes', 'alumbrado', 'visibilidad'],
+  'gases': ['monoxido', 'metano', 'oxigeno', 'atmosfera', 'ventilacion'],
+  'ergonomia': ['disergonomico', 'postura', 'carga postural', 'esfuerzo'],
+
+  // ── Procesos de beneficio ──
+  'chancado': ['chancadora', 'trituracion', 'quijada'],
+  'molienda': ['molino', 'bolas', 'sag', 'procesamiento'],
+  'flotacion': ['reagentes', 'espuma', 'concentrado'],
+};
+
+function expandQuery(query) {
+  const normalized = normalizeText(query);
+  const tokens = new Set(tokenize(normalized));
+  
+  // Add synonyms
+  for (const [key, vals] of Object.entries(SYNONYMS)) {
+    if (normalized.includes(key)) {
+      vals.forEach(v => tokenize(v).forEach(t => tokens.add(t)));
+    }
+    for (const val of vals) {
+      if (normalized.includes(val)) {
+        tokenize(key).forEach(t => tokens.add(t));
+        break;
+      }
+    }
+  }
+  
+  return { original: normalized, tokens: Array.from(tokens) };
+}
+
+function scoreArticle(article, query) {
+  const { original, tokens } = expandQuery(query);
+  const artText = normalizeText(article.text + ' ' + article.titulo + ' ' + article.capitulo + ' ' + article.subcapitulo);
+  const artId = String(article.id);
+  
+  // Direct article number match
+  if (original === artId || original === 'articulo ' + artId || original === 'art ' + artId) {
+    return 1000;
+  }
+  if (artId.startsWith(original) || original.startsWith('art') && artId === original.replace(/\D/g,'')) {
+    return 900;
+  }
+  
+  let score = 0;
+  
+  // Exact phrase match
+  if (artText.includes(original)) {
+    score += 50;
+    // Bonus for appearing in chapter/title
+    if (normalizeText(article.capitulo + ' ' + article.titulo).includes(original)) {
+      score += 30;
+    }
+  }
+  
+  // Token matches
+  let matchedTokens = 0;
+  for (const token of tokens) {
+    if (token.length < 2) continue;
+    if (artText.includes(token)) {
+      matchedTokens++;
+      score += 5;
+      // More weight for matches in structured fields
+      if (normalizeText(article.capitulo).includes(token)) score += 8;
+      if (normalizeText(article.titulo).includes(token)) score += 5;
+    }
+  }
+  
+  // Coverage bonus
+  if (tokens.length > 0) {
+    score += (matchedTokens / tokens.length) * 20;
+  }
+  
+  // Frequency bonus (more occurrences = more relevant)
+  const allMatches = tokens.reduce((acc, t) => {
+    const regex = new RegExp(t, 'g');
+    return acc + (artText.match(regex) || []).length;
+  }, 0);
+  score += Math.min(allMatches * 0.5, 15);
+  
+  return score;
+}
+
+function search(query) {
+  query = query.trim();
+  if (!query) return [];
+
+  // Número de artículo directo — esto no cambia
+  const numMatch = query.match(/^(?:art[íi]culo?\s*\.?\s*|art\.\s*|#)?(\d+)$/i);
+  if (numMatch) {
+    const artId = parseInt(numMatch[1]);
+    const exact = REGLAMENTO_DATA.filter(a => a.id === artId);
+    if (exact.length) return exact;
+  }
+
+  // ✅ BÚSQUEDA COMBINADA: primero exacta, luego fuzzy si hay pocos resultados
+  const exactResults = [];
+  const { original, tokens } = expandQuery(query);
+
+  for (const article of REGLAMENTO_DATA) {
+    const score = scoreArticle(article, query);
+    if (score > 3) exactResults.push({ article, score });
+  }
+  exactResults.sort((a, b) => b.score - a.score);
+
+  // Si la búsqueda exacta da buenos resultados, la usamos
+  if (exactResults.length >= 3) {
+    return exactResults.map(r => r.article).slice(0, 60);
+  }
+
+  // ✅ Si hay pocos o ningún resultado — activamos FUSE.JS (búsqueda difusa)
+  const fuseResults = fuseIndex.search(query, { limit: 60 });
+
+  // Combinamos: primero los exactos, luego los fuzzy sin repetir
+  const exactIds = new Set(exactResults.map(r => r.article.id));
+  const fuzzyOnly = fuseResults
+    .map(r => r.item)
+    .filter(a => !exactIds.has(a.id));
+
+  return [
+    ...exactResults.map(r => r.article),
+    ...fuzzyOnly
+  ].slice(0, 60);
+}
+
+// ─── HIGHLIGHT ────────────────────────────────────────────────────────────────
+function highlightText(text, query) {
+  if (!query) return escapeHtml(text);
+  const terms = tokenize(expandQuery(query).original).filter(t => t.length >= 3);
+  let result = escapeHtml(text);
+  for (const term of terms) {
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    result = result.replace(regex, '<mark>$1</mark>');
+  }
+  return result;
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function getCapShort(cap) {
+  return cap.replace(/^CAPÍTULO\s+[IVXLC]+\s*[\-–]?\s*/i, '').replace(/^CAPÍTULO\s+[IVXLC]+/i, 'CAP.');
+}
+
+function getModificacion(article) {
+  const text = article.text;
+  if (text.includes('034-2023')) return 'Mod. D.S. N° 034-2023-EM';
+  if (text.includes('023-2017') || text.includes('0232017')) return 'Mod. D.S. N° 023-2017-EM';
+  return 'D.S. N° 024-2016-EM';
+}
+
+function renderCard(article, query = '', idx = 0) {
+  const isFav = favorites.includes(article.id);
+  const capShort = getCapShort(article.capitulo) || article.titulo.split('-')[1]?.trim() || '';
+  const previewText = article.text.substring(0, 160) + (article.text.length > 160 ? '...' : '');
+  const preview = highlightText(previewText, query);
+  
+  return `
+<div class="article-card" id="card_${article.id}_${idx}" data-id="${article.id}">
+  <div class="card-header">
+    <div class="art-number">Art.<br>${article.id}</div>
+    <div class="card-meta">
+      <div class="card-chapter">${escapeHtml(capShort)}</div>
+      <div class="card-preview">${preview}</div>
+    </div>
+    <svg class="card-expand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+  </div>
+  <div class="card-body">
+    <div class="card-titulo">${escapeHtml(article.titulo)}</div>
+    ${article.subcapitulo ? `<div class="card-subcap">${escapeHtml(article.subcapitulo)}</div>` : ''}
+    <div class="card-full-text">${highlightText(article.text, query)}</div>
+    <div class="card-actions">
+      <button class="action-btn ${isFav ? 'fav-active' : ''}" onclick="toggleFav(event, ${article.id})">
+        ${isFav ? '★' : '☆'} ${isFav ? 'Guardado' : 'Guardar'}
+      </button>
+      <button class="action-btn" onclick="openDetail(event, ${article.id})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        Detalle
+      </button>
+      <button class="action-btn" onclick="shareArticle(event, ${article.id})">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Copiar
+      </button>
+    </div>
+  </div>
+</div>`;
+}
+
+function toggleCard(e, artId, idx) {
+  if (e.target.closest('button')) return;
+  const card = document.querySelector(`.article-card[data-id="${artId}"]`);
+  if (card) {
+    card.classList.toggle('expanded');
+    if (card.classList.contains('expanded')) {
+      setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  }
+}
+
+// ─── SEARCH FLOW ─────────────────────────────────────────────────────────────
+let searchTimeout;
+const searchInput = document.getElementById('searchInput');
+const clearBtn = document.getElementById('clearBtn');
+const resultsList = document.getElementById('resultsList');
+const searchEmpty = document.getElementById('searchEmpty');
+const resultsInfo = document.getElementById('resultsInfo');
+const resultsCount = document.getElementById('resultsCount');
+const filterRow = document.getElementById('filterRow');
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  const val = searchInput.value;
+  clearBtn.classList.toggle('visible', val.length > 0);
+  if (!val.trim()) {
+    showSearchEmpty();
+    return;
+  }
+  // Cambiar a sección buscar automáticamente al escribir
+  if (currentView !== 'search') {
+    switchView('search');
+  }
+  searchTimeout = setTimeout(() => performSearch(val), 180);
+});
+
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    clearTimeout(searchTimeout);
+    if (searchInput.value.trim()) performSearch(searchInput.value);
+  }
+});
+
+clearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  clearBtn.classList.remove('visible');
+  showSearchEmpty();
+  searchInput.focus();
+});
+
+function showSearchEmpty() {
+  resultsList.innerHTML = '';
+  searchEmpty.style.display = 'block';
+  resultsInfo.style.display = 'none';
+  filterRow.style.display = 'none';
+  searchResults = [];
+  currentFilter = 'todos';
+}
+
+function performSearch(query) {
+  currentSearchTerm = query;
+
+  // ✅ MOTOR MAESTRO — Mejoras 1+2+3+4 combinadas
+  const master = masterSearch(query, REGLAMENTO_DATA, search);
+  searchResults = master.results;
+
+  // Banner intención (Mejora 3)
+  const intentBanner = document.getElementById('intentBanner');
+  if (master.message) {
+    intentBanner.style.display = 'flex';
+    intentBanner.innerHTML = `<span style="font-size:16px">🤖</span><span>${master.message}</span>`;
+  } else {
+    intentBanner.style.display = 'none';
+  }
+
+  // Banner semántico (Mejora 4)
+  const semanticBanner = document.getElementById('semanticBanner');
+  if (master.hint) {
+    semanticBanner.style.display = 'flex';
+    semanticBanner.innerHTML = `
+      <span style="font-size:14px">🔎</span>
+      <span>Mostrando resultados para: <strong style="color:#4ade80">${master.hint}</strong></span>`;
+  } else {
+    semanticBanner.style.display = 'none';
+  }
+  
+  if (searchResults.length === 0) {
+    resultsList.innerHTML = `
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <h3>Sin resultados</h3>
+        <p>No se encontró "<strong>${escapeHtml(query)}</strong>". Intenta con otros términos.</p>
+      </div>`;
+    searchEmpty.style.display = 'none';
+    resultsInfo.style.display = 'flex';
+    resultsCount.textContent = '0';
+    filterRow.style.display = 'none';
+    return;
+  }
+  
+  // Save to recent
+  saveRecentSearch(query);
+  
+  // Build filters
+  const titulos = [...new Set(searchResults.map(a => a.titulo))];
+  
+  searchEmpty.style.display = 'none';
+  resultsInfo.style.display = 'flex';
+  resultsCount.textContent = searchResults.length;
+  document.getElementById('resultsLabel').textContent = 
+    searchResults.length === 1 ? 'resultado encontrado' : 'resultados encontrados';
+  
+  // Render filter chips
+  if (titulos.length > 1) {
+    filterRow.style.display = 'flex';
+    filterRow.innerHTML = `
+      <button class="filter-chip active" data-filter="todos">Todos (${searchResults.length})</button>
+      ${titulos.map(t => {
+        const count = searchResults.filter(a => a.titulo === t).length;
+        const label = t.replace('TÍTULO ', 'T.').split(' - ')[0];
+        return `<button class="filter-chip" data-filter="${escapeHtml(t)}">${escapeHtml(label)} (${count})</button>`;
+      }).join('')}`;
+
+    // Asignar eventos de forma segura
+    filterRow.querySelectorAll('.filter-chip').forEach(btn => {
+      btn.addEventListener('click', () => applyFilter(btn.dataset.filter));
+    });
+  } else {
+    filterRow.style.display = 'none';
+  }
+
+  searchResults = applyPopularity(searchResults); // ✅ Mejora 5
+  renderResults(searchResults, query);
+}
+
+function applyFilter(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => {
+    c.classList.toggle('active', c.textContent.includes(filter === 'todos' ? 'Todos' : filter.split(' - ')[0]));
+  });
+  const filtered = filter === 'todos' ? searchResults : searchResults.filter(a => a.titulo === filter);
+  renderResults(filtered, currentSearchTerm);
+}
+
+function renderResults(articles, query) {
+  resultsList.innerHTML = articles.map((a, i) => renderCard(a, query, i)).join('');
+  resultsList.querySelectorAll('.article-card').forEach((card, i) => {
+    const artId = parseInt(card.dataset.id);
+    card.onclick = (e) => toggleCard(e, artId, i);
+  });
+}
+
+// ─── DETAIL OVERLAY ───────────────────────────────────────────────────────────
+function openDetail(e, artId) {
+  e && e.stopPropagation();
+  const article = REGLAMENTO_DATA.find(a => a.id === artId);
+  if (!article) return;
+  registerOpen(artId); // ✅ Mejora 5
+  
+  currentDetailIndex = REGLAMENTO_DATA.indexOf(article);
+  renderDetail(article);
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('app').style.overflow = 'hidden';
+}
+
+function renderDetail(article) {
+  document.getElementById('detailArtNum').textContent = `Artículo ${article.id}`;
+  document.getElementById('detailCapName').textContent = getCapShort(article.capitulo);
+  
+  const isFav = favorites.includes(article.id);
+  document.getElementById('detailFavBtn').textContent = isFav ? '★' : '☆';
+  document.getElementById('detailFavBtn').classList.toggle('active', isFav);
+  
+  // Breadcrumb
+  const bc = document.getElementById('detailBreadcrumb');
+  bc.innerHTML = [
+    article.titulo.split(' - ')[0],
+    article.capitulo.split(' - ')[0],
+    article.subcapitulo ? article.subcapitulo.split(' - ')[0] : null
+  ].filter(Boolean).map(t => `<span class="breadcrumb-chip">${escapeHtml(t)}</span>`).join('');
+  
+  document.getElementById('detailNorma').innerHTML = `⚖ ${escapeHtml(getModificacion(article))}`;
+  document.getElementById('detailText').innerHTML = highlightText(article.text, currentSearchTerm);
+  
+  // Nav buttons
+  document.getElementById('prevBtn').disabled = currentDetailIndex === 0;
+  document.getElementById('nextBtn').disabled = currentDetailIndex === REGLAMENTO_DATA.length - 1;
+  
+  // Scroll to top
+  document.getElementById('detailOverlay').querySelector('.detail-body').scrollTop = 0;
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('app').style.overflow = '';
+}
+
+function navigateArticle(dir) {
+  const newIdx = currentDetailIndex + dir;
+  if (newIdx < 0 || newIdx >= REGLAMENTO_DATA.length) return;
+  currentDetailIndex = newIdx;
+  renderDetail(REGLAMENTO_DATA[newIdx]);
+}
+
+// ─── FAVORITES ────────────────────────────────────────────────────────────────
+function toggleFav(e, artId) {
+  e && e.stopPropagation();
+  const idx = favorites.indexOf(artId);
+  if (idx === -1) {
+    favorites.push(artId);
+    showToast('⭐ Artículo guardado');
+  } else {
+    favorites.splice(idx, 1);
+    showToast('Artículo eliminado');
+  }
+  storageSave('topo_favs', favorites);
+  
+  // Update button in card
+  const card = document.querySelector(`.article-card[data-id="${artId}"]`);
+  if (card) {
+    const btn = card.querySelector('.action-btn');
+    if (btn) {
+      const isFav = favorites.includes(artId);
+      btn.classList.toggle('fav-active', isFav);
+      btn.innerHTML = `${isFav ? '★' : '☆'} ${isFav ? 'Guardado' : 'Guardar'}`;
+    }
+  }
+  
+  if (currentView === 'fav') renderFavView();
+}
+
+function toggleFavDetail() {
+  const article = REGLAMENTO_DATA[currentDetailIndex];
+  toggleFav(null, article.id);
+  const isFav = favorites.includes(article.id);
+  document.getElementById('detailFavBtn').textContent = isFav ? '★' : '☆';
+  document.getElementById('detailFavBtn').classList.toggle('active', isFav);
+}
+
+function renderFavView() {
+  const favArticles = REGLAMENTO_DATA.filter(a => favorites.includes(a.id));
+  const favList = document.getElementById('favList');
+  const favEmpty = document.getElementById('favEmpty');
+  
+  if (favArticles.length === 0) {
+    favList.innerHTML = '';
+    favEmpty.style.display = 'block';
+  } else {
+    favEmpty.style.display = 'none';
+    favList.innerHTML = favArticles.map((a, i) => renderCard(a, '', i)).join('');
+    
+    // Reasignar eventos a todos los cards recién creados
+    favList.querySelectorAll('.article-card').forEach((card, i) => {
+      const artId = parseInt(card.dataset.id);
+      card.onclick = (e) => toggleCard(e, artId, i);
+    });
+  }
+}
+
+// ─── RECENT SEARCHES ─────────────────────────────────────────────────────────
+function saveRecentSearch(query) {
+  recentSearches = [query, ...recentSearches.filter(q => q !== query)].slice(0, 8);
+  storageSave('topo_recent', recentSearches);
+  renderRecentSearches();
+}
+
+function renderRecentSearches() {
+  const container = document.getElementById('recentList');
+  if (!recentSearches.length) {
+    container.innerHTML = '<p style="font-size:12px;color:var(--gray500);padding:4px">No hay búsquedas recientes</p>';
+    return;
+  }
+  container.innerHTML = recentSearches.map((q, i) => `
+    <div class="recent-item" data-idx="${i}" onclick="searchFromRecent(this.dataset.idx)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gray500);flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span class="recent-text">${escapeHtml(q)}</span>
+      <svg class="recent-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+    </div>`).join('');
+}
+
+function searchFromRecent(idx) {
+  const query = typeof idx === 'string' && isNaN(idx) ? idx : recentSearches[parseInt(idx)];
+  if (!query) return;
+  searchInput.value = query;
+  clearBtn.classList.add('visible');
+  switchView('search');
+  performSearch(query);
+}
+
+// ─── QUICK ACCESS ─────────────────────────────────────────────────────────────
+const QUICK_ITEMS = [
+  { icon: '🦺', label: 'EPP', query: 'equipo proteccion personal', color: '#1a4a8a' },
+  { icon: '⚠️', label: 'IPERC', query: 'IPERC identificacion peligros', color: '#7c3aed' },
+  { icon: '💥', label: 'Explosivos', query: 'explosivos voladura', color: '#dc2626' },
+  { icon: '🏥', label: 'Salud', query: 'salud ocupacional medico', color: '#059669' },
+  { icon: '🚨', label: 'Accidentes', query: 'accidente trabajo investigacion', color: '#ea580c' },
+  { icon: '🌬️', label: 'Ventilación', query: 'ventilacion mina', color: '#0891b2' },
+  { icon: '⛑️', label: 'Comité SSO', query: 'comite seguridad salud', color: '#7c3aed' },
+  { icon: '🔧', label: 'Trabajos Riesgo', query: 'trabajos alto riesgo', color: '#b45309' },
+];
+
+function buildQuickGrid() {
+  const grid = document.getElementById('quickGrid');
+  grid.innerHTML = QUICK_ITEMS.map(item => `
+    <div class="quick-card" onclick="searchFromRecent('${item.query}')">
+      <div class="quick-icon" style="background:${item.color}22;border:1px solid ${item.color}44">${item.icon}</div>
+      <div>
+        <div class="quick-label">${item.label}</div>
+        <div class="quick-count">Buscar artículos →</div>
+      </div>
+    </div>`).join('');
+}
+
+// ─── ÍNDICE VIEW ─────────────────────────────────────────────────────────────
+function buildIndice() {
+  const container = document.getElementById('indiceContent');
+  
+  // Group by titulo
+  const byTitulo = {};
+  for (const art of REGLAMENTO_DATA) {
+    if (!byTitulo[art.titulo]) byTitulo[art.titulo] = {};
+    const cap = art.capitulo || 'Sin capítulo';
+    if (!byTitulo[art.titulo][cap]) byTitulo[art.titulo][cap] = [];
+    byTitulo[art.titulo][cap].push(art.id);
+  }
+  
+  let html = '';
+  for (const [titulo, caps] of Object.entries(byTitulo)) {
+    const tituloLabel = titulo.replace('TÍTULO ', 'T. ');
+    const totalArts = Object.values(caps).flat().length;
+    
+    html += `<div class="titulo-section">
+      <div class="titulo-header" onclick="toggleTitulo(this)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="m6 9 6 6 6-6"/></svg>
+        <span class="titulo-name">${escapeHtml(titulo)}</span>
+        <span class="titulo-articles">${totalArts} art.</span>
+      </div>
+      <div class="capitulo-list" style="display:none">`;
+    
+    for (const [cap, ids] of Object.entries(caps)) {
+      const capShort = getCapShort(cap);
+      const capNum = cap.match(/CAPÍTULO\s+([IVXLC]+)/i)?.[1] || '';
+      const artRange = ids.length > 1 ? `Art. ${Math.min(...ids)}-${Math.max(...ids)}` : `Art. ${ids[0]}`;
+      
+      html += `<div class="capitulo-item" onclick="searchFromRecent('${escapeHtml(capShort.substring(0,40))}')">
+        ${capNum ? `<span class="cap-number">CAP. ${capNum}</span>` : ''}
+        <span class="cap-name">${escapeHtml(capShort || cap)}</span>
+        <span class="cap-arts">${artRange}</span>
+      </div>`;
+    }
+    
+    html += `</div></div>`;
+  }
+  
+  container.innerHTML = html;
+}
+
+function toggleTitulo(header) {
+  const list = header.nextElementSibling;
+  const icon = header.querySelector('svg');
+  const isOpen = list.style.display !== 'none';
+  list.style.display = isOpen ? 'none' : 'flex';
+  icon.style.transform = isOpen ? '' : 'rotate(180deg)';
+}
+
+// ─── SHARE / COPY ─────────────────────────────────────────────────────────────
+function shareArticle(e, artId) {
+  e && e.stopPropagation();
+  const article = REGLAMENTO_DATA.find(a => a.id === artId);
+  if (!article) return;
+  
+  const textToCopy = `Artículo ${article.id} — ${article.capitulo}\n\n${article.text}\n\n(D.S. N° 024-2016-EM — Reglamento SSO Minería)`;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(textToCopy)
+      .then(() => showToast('📋 Artículo copiado'))
+      .catch(() => showToast('⚠️ No se pudo copiar'));
+  } else {
+    showToast('⚠️ Tu navegador no permite copiar');
+  }
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────────
+function switchView(view) {
+  currentView = view;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(view + 'View').classList.add('active');
+  document.querySelector(`[data-view="${view}"]`).classList.add('active');
+
+  // Limpiar búsqueda al cambiar de sección
+  if (view !== 'search') {
+    resultsList.innerHTML = '';
+    searchResults = [];
+  }
+
+  if (view === 'fav') renderFavView();
+  if (view === 'home') renderRecentSearches();
+  
+  document.getElementById('mainContent').scrollTop = 0;
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+let toastTimeout;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── ABOUT ────────────────────────────────────────────────────────────────────
+function openAbout() {
+  document.getElementById('aboutOverlay').style.transform = 'translateY(0)';
+}
+function closeAbout() {
+  document.getElementById('aboutOverlay').style.transform = 'translateY(100%)';
+}
+
+// ─── BACK GESTURE ─────────────────────────────────────────────────────────────
+let touchStartY = 0;
+document.getElementById('detailOverlay').addEventListener('touchstart', e => {
+  touchStartY = e.touches[0].clientY;
+});
+document.getElementById('detailOverlay').addEventListener('touchmove', e => {
+  const body = document.querySelector('.detail-body');
+  if (body.scrollTop <= 0 && e.touches[0].clientY - touchStartY > 60) {
+    closeDetail();
+  }
+});
+
+// ─── SERVICE WORKER ───────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  buildQuickGrid();
+  buildIndice();
+  renderRecentSearches();
+  
+  setTimeout(() => {
+    document.getElementById('loadingScreen').style.opacity = '0';
+    document.getElementById('loadingScreen').style.transition = 'opacity 0.4s';
+    setTimeout(() => {
+      document.getElementById('loadingScreen').style.display = 'none';
+    }, 400);
+  }, 1400);
+  
+  // Focus search on start
+  setTimeout(() => {
+    if (currentView === 'search') searchInput.focus();
+  }, 1600);
+});
+</script>
+</body>
+</html>
