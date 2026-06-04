@@ -1434,8 +1434,22 @@ function scoreArticle(article, query) {
     const regex = new RegExp(t, 'g');
     return acc + (artText.match(regex) || []).length;
   }, 0);
-  score += Math.min(allMatches * 0.5, 15);
-  
+  score += Math.min(allMatches * 2, 40);
+
+  // Bonus si el término aparece en las primeras 100 chars del texto (inicio del artículo)
+  const artStart = normalizeText(article.text.substring(0, 100));
+  for (const token of tokens) {
+    if (token.length >= 3 && artStart.includes(token)) {
+      score += 10;
+    }
+  }
+
+  // Bonus si TODOS los tokens de la búsqueda están en el artículo
+  const allTokensPresent = tokens.every(t => t.length < 3 || artText.includes(t));
+  if (allTokensPresent && tokens.length > 1) {
+    score += 20;
+  }
+
   return score;
 }
 

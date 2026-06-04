@@ -390,16 +390,6 @@ const INTENT_MAP = [
     keywords: 'beneficio planta concentradora flotacion lixiviacion fundicion'
   },
 
-  // ── ILUMINACIÓN ────────────────────────────────────────────────────────────
-  {
-    id: 'iluminacion',
-    triggers: ['iluminacion mina','luz mina','luxes','alumbrado','visibilidad mina',
-               'lampara minera','nivel iluminacion','oscuridad mina'],
-    articles: [352, 353, 354, 355, 356, 357, 358, 359],
-    response: '💡 La iluminación es fundamental para la seguridad. Artículos del capítulo de Iluminación:',
-    keywords: 'iluminacion luxes luz alumbrado lampara visibilidad'
-  },
-
   // ── INSPECCIONES ───────────────────────────────────────────────────────────
   {
     id: 'inspecciones',
@@ -1560,17 +1550,23 @@ function detectIntent(query) {
       const t = trigger.toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-      // Coincidencia exacta del trigger completo
+      // Coincidencia exacta del trigger completo — peso alto
       if (q.includes(t)) {
-        score += t.split(' ').length * 10; // más puntos si el trigger es más largo
+        score += t.split(' ').length * 20;
+        continue;
       }
 
-      // Coincidencia por palabras individuales del trigger
+      // Coincidencia por palabras individuales — peso muy bajo para evitar contaminación
       const triggerWords = t.split(' ').filter(w => w.length > 3);
       const queryWords = q.split(' ');
       const matches = triggerWords.filter(tw => queryWords.some(qw => qw.includes(tw) || tw.includes(qw)));
-      score += matches.length * 3;
+      score += matches.length * 1;
     }
+
+    // Bonus si el id del intent coincide directamente con la query
+    const intentKeywords = intent.id.replace(/_/g, ' ').split(' ');
+    const directHit = intentKeywords.some(kw => kw.length > 3 && q.includes(kw));
+    if (directHit) score += 25;
 
     if (score > bestScore) {
       bestScore = score;
